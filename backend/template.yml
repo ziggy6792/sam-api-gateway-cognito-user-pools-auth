@@ -2,22 +2,21 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
 
 Resources:
-
   MyApi:
     Type: AWS::Serverless::Api
     Properties:
       StageName: dev
-      Cors: 
+      Cors:
         AllowMethods: "'*'"
         AllowHeaders: "'*'"
         AllowOrigin: "'*'"
       Auth:
         DefaultAuthorizer: MyCognitoUserPoolAuthorizer
         AddDefaultAuthorizerToCorsPreflight: False
-        Authorizers: 
+        Authorizers:
           MyCognitoUserPoolAuthorizer:
-            UserPoolArn: !GetAtt MyCognitoUserPool.Arn 
-    
+            UserPoolArn: !GetAtt MyCognitoUserPool.Arn
+
   HelloFunction:
     Type: 'AWS::Serverless::Function'
     Properties:
@@ -31,7 +30,7 @@ Resources:
             RestApiId: !Ref MyApi
             Path: /hello
             Method: GET
-  
+
   MyCognitoUserPool:
     Type: AWS::Cognito::UserPool
     Properties:
@@ -47,13 +46,13 @@ Resources:
         - AttributeDataType: String
           Name: email
           Required: false
-  
+
   CognitoUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
     Properties:
       ClientName: sam_api_gateway_cup_auth_cognito_client
       UserPoolId: !Ref MyCognitoUserPool
-  
+
   PreSignupLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -64,12 +63,12 @@ Resources:
         }
       Handler: index.handler
       MemorySize: 128
-      Runtime: nodejs8.10
+      Runtime: nodejs10.x
       Timeout: 3
 
   LambdaCognitoUserPoolExecutionPermission:
     Type: AWS::Lambda::Permission
-    Properties: 
+    Properties:
       Action: lambda:InvokeFunction
       FunctionName: !GetAtt PreSignupLambdaFunction.Arn
       Principal: cognito-idp.amazonaws.com
@@ -77,21 +76,21 @@ Resources:
 
 Outputs:
   Region:
-    Description: "Region"
+    Description: 'Region'
     Value: !Ref AWS::Region
 
   ApiId:
-    Description: "API ID"
+    Description: 'API ID'
     Value: !Ref MyApi
 
   ApiUrl:
-    Description: "API endpoint URL for Prod environment"
+    Description: 'API endpoint URL for Prod environment'
     Value: !Sub 'https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/dev/'
-  
+
   CognitoUserPoolId:
-    Description: "Cognito User Pool Id"
+    Description: 'Cognito User Pool Id'
     Value: !Ref MyCognitoUserPool
 
   CognitoUserPoolClientId:
-    Description: "Cognito User Pool Client Id"
+    Description: 'Cognito User Pool Client Id'
     Value: !Ref CognitoUserPoolClient

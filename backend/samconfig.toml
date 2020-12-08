@@ -1,0 +1,10 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "cognito-authorizer"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-15nhiaa1dl4qc"
+s3_prefix = "cognito-authorizer"
+region = "ap-southeast-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
